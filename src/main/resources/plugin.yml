@@ -1,0 +1,14 @@
+name: Columns
+version: '${project.version}'
+main: org.koteyka.columns.ColumnsPlugin
+api-version: '1.20'
+commands:
+  start:
+    description: start the game!
+    permission: columns.cmd.start
+    permission-message: НЕЛЬЗЯ
+    usage: /<command>
+permissions:
+  columns.cmd.start:
+    description: command start game
+    default: op
