@@ -1,5 +1,6 @@
 package org.koteyka.columns.utils;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -36,4 +37,8 @@ public class Utils {
         }
     }
 
+    public static boolean is1_20Version() {
+        String bukkitVersion = Bukkit.getBukkitVersion();
+        return bukkitVersion.startsWith("1.20");
+    }
 }

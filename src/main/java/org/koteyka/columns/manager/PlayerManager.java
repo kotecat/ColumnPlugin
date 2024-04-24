@@ -12,11 +12,12 @@ import org.koteyka.columns.param.Mode;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 
 public class PlayerManager {
 
     private final GameManager gameManager;
-    private List<Player> playersInGame = new ArrayList<Player>();
+    private List<UUID> playersInGame = new ArrayList<UUID>();
     private static final int MAX_PLAYERS = 8;
 
     public PlayerManager(GameManager gameManager) {
@@ -28,19 +29,24 @@ public class PlayerManager {
         Bukkit.getOnlinePlayers().stream().filter(
                 player -> player.getGameMode() != GameMode.CREATIVE
         ).forEach(
-                player -> this.playersInGame.add(player)
+                player -> this.playersInGame.add(player.getUniqueId())
         );
         this.playersInGame = new ArrayList<>(playersInGame.subList(0, Math.min(MAX_PLAYERS, playersInGame.size())));
         Collections.shuffle(this.playersInGame);
     }
 
     public List<Player> getPlayersInGame() {
-        return playersInGame;
+        ArrayList<Player> players = new ArrayList<>();
+        for (UUID uuid : playersInGame) {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player != null) players.add(player);
+        }
+        return players;
     }
 
     public List<Player> getLivedPlayers() {
         List<Player> lifePlayers = new ArrayList<>();
-        for (Player player : playersInGame) {
+        for (Player player : getPlayersInGame()) {
             GameMode gameMode = player.getGameMode();
             if (gameMode != GameMode.SPECTATOR) {
                 lifePlayers.add(player);
@@ -66,7 +72,7 @@ public class PlayerManager {
         world.getWorldBorder().setCenter(mode.getBorder().getCenterX(), mode.getBorder().getCenterZ());
 
         for (int i = 0; i < playersInGame.size(); i++) {
-            Player player = playersInGame.get(i);
+            Player player = getPlayersInGame().get(i);
             Cords cords = mode.getCords().get(i);
             Location location = new Location(world, cords.x, cords.y, cords.z, cords.p, 0);
             preparePlayer(player, location);

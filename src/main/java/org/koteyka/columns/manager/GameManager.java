@@ -22,7 +22,7 @@ public class GameManager {
 
     private final ColumnsPlugin plugin;
     private final PlayerManager playerManager;
-    private GameState gameState = GameState.LOBBY;
+    private GameState gameState = GameState.NONE;
     private World world;
 
     private CountdownStartTask countdownStartTask;
@@ -33,6 +33,7 @@ public class GameManager {
         this.plugin = plugin;
         this.playerManager = new PlayerManager(this);
         this.world = Bukkit.getWorlds().get(0);
+        this.setGameState(GameState.LOBBY);
     }
 
     public void setGameState(GameState gameState) {
@@ -94,17 +95,7 @@ public class GameManager {
         player.setGameMode(GameMode.SPECTATOR);
         player.setHealth(player.getMaxHealth());
 
-        String textKill = ChatColor.BLUE + "%s".formatted(player.getName())
-                + ChatColor.RED + " was killed";
-
-        if(player.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
-            if (((EntityDamageByEntityEvent) player.getLastDamageCause()).getDamager() instanceof Player) {
-                Player damager = (Player) ((EntityDamageByEntityEvent) player.getLastDamageCause()).getDamager();
-                textKill = textKill + ChatColor.GOLD + " -> " + ChatColor.BLUE + "%s".formatted(
-                        damager.getName()
-                );
-            }
-        }
+        String textKill = getTextKill(player);
 
         Bukkit.broadcastMessage(
                 ChatColor.RED + "[!] > " + textKill
@@ -115,10 +106,24 @@ public class GameManager {
         if (livedPlayers.size() <= 1) {
             stop();
             if (!livedPlayers.isEmpty()) {
-                Bukkit.broadcastMessage(ChatColor.AQUA
-                        + "%s Win".formatted(livedPlayers.get(0).getName()));
+                Bukkit.broadcastMessage(String.format(
+                        "%s%s Win",
+                        ChatColor.AQUA, livedPlayers.get(0).getName()));
             }
         }
+    }
+
+    private static String getTextKill(Player player) {
+        String textKill = ChatColor.BLUE + player.getName()
+                        + ChatColor.RED + " was killed";
+
+        if(player.getLastDamageCause() instanceof EntityDamageByEntityEvent) {
+            if (((EntityDamageByEntityEvent) player.getLastDamageCause()).getDamager() instanceof Player) {
+                Player damager = (Player) ((EntityDamageByEntityEvent) player.getLastDamageCause()).getDamager();
+                textKill = textKill + ChatColor.GOLD + " -> " + ChatColor.BLUE + damager.getName();
+            }
+        }
+        return textKill;
     }
 
     private void stop() {
