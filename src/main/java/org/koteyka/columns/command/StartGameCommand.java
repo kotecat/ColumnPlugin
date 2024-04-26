@@ -5,7 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.koteyka.columns.manager.GameManager;
-import org.koteyka.columns.state.GameState;
+import org.koteyka.columns.enums.GameState;
 
 public class StartGameCommand implements CommandExecutor {
 

@@ -4,7 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.koteyka.columns.manager.GameManager;
-import org.koteyka.columns.state.GameState;
+import org.koteyka.columns.enums.GameState;
 
 public class CountdownStartTask extends BukkitRunnable {
 

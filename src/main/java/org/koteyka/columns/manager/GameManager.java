@@ -1,7 +1,6 @@
 package org.koteyka.columns.manager;
 
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -10,7 +9,7 @@ import org.bukkit.util.Vector;
 import org.koteyka.columns.ColumnsPlugin;
 import org.koteyka.columns.param.Cords;
 import org.koteyka.columns.param.Mode;
-import org.koteyka.columns.state.GameState;
+import org.koteyka.columns.enums.GameState;
 import org.koteyka.columns.task.BorderTask;
 import org.koteyka.columns.task.CountdownStartTask;
 import org.koteyka.columns.task.GiveItemsTask;
@@ -128,6 +127,7 @@ public class GameManager {
 
     private void stop() {
         setGameState(GameState.LOBBY);
+        getPlayerManager().clearAllPlayers();
     }
 
     public void prepareGameLocation() {

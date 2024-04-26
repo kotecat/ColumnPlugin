@@ -1,8 +1,6 @@
 package org.koteyka.columns.event;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.koteyka.columns.manager.GameManager;
 import org.koteyka.columns.manager.PlayerManager;
-import org.koteyka.columns.state.GameState;
+import org.koteyka.columns.enums.GameState;
 import org.koteyka.columns.utils.Utils;
 
 public class DamageListener implements Listener {

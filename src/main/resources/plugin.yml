@@ -8,7 +8,15 @@ commands:
     permission: columns.cmd.start
     permission-message: НЕЛЬЗЯ
     usage: /<command>
+  event:
+    description: event!
+    permission: columns.cmd.event
+    permission-message: НЕЛЬЗЯ
+    usage: /<command>
 permissions:
   columns.cmd.start:
     description: command start game
+    default: op
+  columns.cmd.event:
+    description: command event in game
     default: op

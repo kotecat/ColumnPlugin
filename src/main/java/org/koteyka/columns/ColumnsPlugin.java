@@ -1,11 +1,11 @@
 package org.koteyka.columns;
 
-import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.koteyka.columns.command.EventGameCommand;
 import org.koteyka.columns.command.StartGameCommand;
+import org.koteyka.columns.event.ClockClickEvent;
 import org.koteyka.columns.event.DamageListener;
 import org.koteyka.columns.manager.GameManager;
-import org.koteyka.columns.state.GameState;
 
 public final class ColumnsPlugin extends JavaPlugin {
 
@@ -15,7 +15,9 @@ public final class ColumnsPlugin extends JavaPlugin {
         GameManager gameManager = new GameManager(this);
 
         getCommand("start").setExecutor(new StartGameCommand(gameManager));
+        getCommand("event").setExecutor(new EventGameCommand(gameManager));
         getServer().getPluginManager().registerEvents(new DamageListener(gameManager), this);
+        getServer().getPluginManager().registerEvents(new ClockClickEvent(gameManager), this);
     }
 
     @Override

@@ -12,8 +12,8 @@ public enum Mode {
                     new Cords(0.5, 50, -13.5, 0),
                     new Cords(0.5, 50, 13.5, 180)
             ),
-            new BorderConf(35, 60, 450),
-            9,
+            new BorderConf(36, 60, 450),
+            10,
             7
     ),
     EIGHT (
@@ -28,7 +28,7 @@ public enum Mode {
                     new Cords(-15.5, 50, 7.5, -113)
             ),
             new BorderConf(39, 60, 500),
-            9,
+            10,
             8
     );
 

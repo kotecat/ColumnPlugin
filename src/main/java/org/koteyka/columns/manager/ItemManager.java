@@ -2,18 +2,19 @@ package org.koteyka.columns.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
+import org.bukkit.block.CommandBlock;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.KnowledgeBookMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 public class ItemManager {
 
@@ -38,7 +39,7 @@ public class ItemManager {
         if (!(itemStack.getItemMeta() instanceof PotionMeta)) return;
 
         PotionMeta potionMeta = (PotionMeta) itemStack.getItemMeta();
-        List<PotionType> potions = new ArrayList<>(List.of(PotionType.values().clone()));
+        List<PotionType> potions = new ArrayList<>(Arrays.asList((PotionType.values().clone())));
         Collections.shuffle(potions);
         PotionType potionEffect = potions.get(0);
         Random random = new Random();

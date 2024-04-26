@@ -26,9 +26,7 @@ public class PlayerManager {
 
     public void addPlayersInGame() {
         this.playersInGame.clear();
-        Bukkit.getOnlinePlayers().stream().filter(
-                player -> player.getGameMode() != GameMode.CREATIVE
-        ).forEach(
+        Bukkit.getOnlinePlayers().forEach(
                 player -> this.playersInGame.add(player.getUniqueId())
         );
         this.playersInGame = new ArrayList<>(playersInGame.subList(0, Math.min(MAX_PLAYERS, playersInGame.size())));
@@ -42,6 +40,10 @@ public class PlayerManager {
             if (player != null) players.add(player);
         }
         return players;
+    }
+
+    public void clearAllPlayers() {
+        playersInGame.clear();
     }
 
     public List<Player> getLivedPlayers() {

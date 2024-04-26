@@ -1,4 +1,4 @@
-package org.koteyka.columns.state;
+package org.koteyka.columns.enums;
 
 public enum GameState {
     LOBBY,

@@ -5,6 +5,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 
@@ -20,7 +22,6 @@ public class Utils {
             for (int y = minimum.getBlockY(); y <= maximum.getBlockY(); y++) {
                 for (int z = minimum.getBlockZ(); z <= maximum.getBlockZ(); z++) {
                     Block blockAt = world.getBlockAt(x, y, z);
-                    if (blockAt.getType() == Material.BARRIER) continue;
                     blockAt.setType(material);
                 }
             }
@@ -34,6 +35,21 @@ public class Utils {
             location.subtract(0, 1, 0);
             Block blockAt = world.getBlockAt(location);
             blockAt.setType(Material.BEDROCK);
+        }
+    }
+
+    public static void invertTime(World world) {
+        world.setTime(world.getTime() + 12000);
+    }
+
+    public static void removeOneItem(Material material, Inventory inventory) {
+        for (ItemStack itemStack : inventory) {
+            if (itemStack == null) continue;
+            if (itemStack.getType() == material) {
+                int amount = itemStack.getAmount();
+                amount--;
+                itemStack.setAmount(amount);
+            }
         }
     }
 
