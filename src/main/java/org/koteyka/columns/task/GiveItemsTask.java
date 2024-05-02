@@ -19,10 +19,6 @@ public class GiveItemsTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        List<Player> playersInGame = gameManager.getPlayerManager().getPlayersInGame();
-        for (Player player : playersInGame) {
-            if (player.getGameMode() == GameMode.SPECTATOR) continue;
-            player.getInventory().addItem(itemManager.generateItem());
-        }
+        gameManager.getPlayerManager().giveItems(itemManager.generateItem());
     }
 }

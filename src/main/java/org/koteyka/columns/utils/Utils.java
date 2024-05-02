@@ -7,7 +7,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.Vector;
+
+import java.util.*;
 
 
 public class Utils {
@@ -38,6 +41,18 @@ public class Utils {
         }
     }
 
+    public static void createCapsule(Location location, Material material) {
+        World world = location.getWorld();
+
+        if (!material.isBlock()) return;
+
+        world.getBlockAt(location.clone().add(0, 2, 0)).setType(material);
+        world.getBlockAt(location.clone().add(1, 1, 0)).setType(material);
+        world.getBlockAt(location.clone().add(-1, 1, 0)).setType(material);
+        world.getBlockAt(location.clone().add(0, 1, -1)).setType(material);
+        world.getBlockAt(location.clone().add(0, 1, 1)).setType(material);
+    }
+
     public static void invertTime(World world) {
         world.setTime(world.getTime() + 12000);
     }
@@ -49,6 +64,7 @@ public class Utils {
                 int amount = itemStack.getAmount();
                 amount--;
                 itemStack.setAmount(amount);
+                break;
             }
         }
     }

@@ -2,6 +2,7 @@ package org.koteyka.columns.task;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.koteyka.columns.manager.GameManager;
 import org.koteyka.columns.enums.GameState;
@@ -18,15 +19,17 @@ public class CountdownStartTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        if (timeLeft <= 0) {
-            cancel();
-            gameManager.setGameState(GameState.ACTIVE);
-            return;
-        }
-        Bukkit.broadcastMessage(
-                ChatColor.GOLD + "Game start - "
-                + ChatColor.DARK_GREEN + timeLeft + "s"
-        );
-        timeLeft--;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(gameManager.getPlugin(), () -> {
+            if (timeLeft <= 0) {
+                cancel();
+                gameManager.setGameState(GameState.ACTIVE);
+                return;
+            }
+            Bukkit.broadcastMessage(
+                    ChatColor.GOLD + "Game start - "
+                            + ChatColor.DARK_GREEN + timeLeft + "s"
+            );
+            timeLeft--;
+        }, 0L);
     }
 }

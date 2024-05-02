@@ -5,17 +5,26 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.koteyka.columns.ColumnsPlugin;
+import org.koteyka.columns.enums.Event;
 import org.koteyka.columns.param.Cords;
 import org.koteyka.columns.param.Mode;
 import org.koteyka.columns.enums.GameState;
 import org.koteyka.columns.task.BorderTask;
 import org.koteyka.columns.task.CountdownStartTask;
 import org.koteyka.columns.task.GiveItemsTask;
+import org.koteyka.columns.task.event.DamageCountdown;
 import org.koteyka.columns.utils.Utils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 public class GameManager {
 
@@ -24,9 +33,7 @@ public class GameManager {
     private GameState gameState = GameState.NONE;
     private World world;
 
-    private CountdownStartTask countdownStartTask;
-    private GiveItemsTask giveItemsTask;
-    private BorderTask borderTask;
+    private List<BukkitRunnable> tasks = new ArrayList<>();
 
     public GameManager(ColumnsPlugin plugin) {
         this.plugin = plugin;
@@ -47,34 +54,37 @@ public class GameManager {
             case LOBBY:
                 playerManager.prepareLobby();
                 // tasks cancel
-                if (countdownStartTask != null && !countdownStartTask.isCancelled()) {
-                    countdownStartTask.cancel();
-                }
-                if (giveItemsTask != null && !giveItemsTask.isCancelled()) {
-                    giveItemsTask.cancel();
-                }
-                if (borderTask != null && !borderTask.isCancelled()) {
-                    borderTask.cancel();
-                }
+                tasks.forEach((bukkitRunnable -> {
+                    if (bukkitRunnable != null && !bukkitRunnable.isCancelled()) {
+                        bukkitRunnable.cancel();
+                    }
+                }));
                 break;
 
             case STARTING:
                 Bukkit.broadcastMessage(ChatColor.DARK_GREEN + "starting!");
                 playerManager.addPlayersInGame();
                 prepareGameLocation();
+                madeCapsule(Material.GLASS);
                 // tasks init
-                this.countdownStartTask = new CountdownStartTask(this);
-                this.countdownStartTask.runTaskTimer(plugin, 0L, 20L);
+                BukkitRunnable countdownStartTask = new CountdownStartTask(this);
+                countdownStartTask.runTaskTimerAsynchronously(plugin, 0L, 20L);
+                tasks.add(countdownStartTask);
                 break;
 
             case ACTIVE:
                 Bukkit.broadcastMessage("GO!");
                 playerManager.prepareGame();
                 // tasks init
-                this.giveItemsTask = new GiveItemsTask(this);
-                this.giveItemsTask.runTaskTimer(plugin, getMode().getCountDownItem(), getMode().getCountDownItem());
-                this.borderTask = new BorderTask(this);
-                this.borderTask.runTaskLater(plugin, getMode().getBorder().getTimeToWait() * 20L);
+                BukkitRunnable giveItemsTask = new GiveItemsTask(this);
+                giveItemsTask.runTaskTimer(plugin, getMode().getCountDownItem(), getMode().getCountDownItem());
+                tasks.add(giveItemsTask);
+                BukkitRunnable borderTask = new BorderTask(this);
+                borderTask.runTaskLater(plugin, getMode().getBorder().getTimeToWait() * 20L);
+                tasks.add(borderTask);
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    madeCapsule(Material.AIR);
+                }, 3 * 20L);
                 break;
         }
     }
@@ -143,6 +153,14 @@ public class GameManager {
         }
     }
 
+    private void madeCapsule(Material material) {
+        Mode mode = getMode();
+        for (Cords cord : mode.getCords()) {
+            Location location = new Location(world, cord.x, cord.y, cord.z);
+            Utils.createCapsule(location, material);
+        }
+    }
+
     public void clearGameLocation() {
         Utils.fillBlock(
                 new Vector(-39, world.getMinHeight(), -39),
@@ -153,6 +171,36 @@ public class GameManager {
         for (Entity entity : world.getEntities()) {
             if (entity.getType() == EntityType.PLAYER) continue;
             entity.remove();
+        }
+    }
+
+    public void runEvent(Event event) {
+        Random random = new Random();
+
+        getPlayerManager().spawnParticles(Particle.TOTEM, 500);
+        switch (event) {
+            case DAMAGE:
+                int duration = random.nextInt(7) + 6;
+                int countdown = 3 - random.nextInt(1);
+                double amount = (double) (random.nextInt(5) + 8) / 10;
+                String format = String.format(
+                        "§6All players receive §2%.1f§c damage §6every §2%d§6 seconds!\nfor §2%d§6 seconds",
+                        amount, countdown, duration
+                );
+                Bukkit.broadcastMessage("§4[!] " + format);
+                BukkitRunnable damageCountdown = new DamageCountdown(this, duration, countdown, amount);
+                damageCountdown.runTaskTimer(plugin, 0L, 20L);
+                tasks.add(damageCountdown);
+                break;
+            case RAND_ITEM:
+                ItemManager itemManager = new ItemManager(world);
+                getPlayerManager().giveItems(itemManager.generateItem());
+                Bukkit.broadcastMessage("§4[!] §6Everyone gets an §4extra §2ITEM§6!");
+                break;
+            case RAND_EFFECT:
+                getPlayerManager().giveEffects();
+                Bukkit.broadcastMessage("§4[!] §6Everyone gets an §4extra §cEFFECT§6!");
+                break;
         }
     }
 

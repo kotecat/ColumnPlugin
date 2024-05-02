@@ -21,6 +21,10 @@ public class ItemManager {
     private static List<Material> enabledMaterials = new ArrayList<>();
     private final World world;
 
+    private final int POTIONS_UP = 1;
+    private final int ENCH_BOOKS = 2;
+    private final int ARROWS = 1;
+
     public ItemManager(World world) {
         this.world = world;
     }
@@ -31,6 +35,20 @@ public class ItemManager {
                 if (!material.isItem()) continue;
                 enabledMaterials.add(material);
             }
+        }
+        addUpMaterial(Material.POTION, POTIONS_UP);
+        addUpMaterial(Material.SPLASH_POTION, POTIONS_UP);
+        addUpMaterial(Material.LINGERING_POTION, POTIONS_UP);
+
+        addUpMaterial(Material.ENCHANTED_BOOK, ENCH_BOOKS);
+
+        addUpMaterial(Material.TIPPED_ARROW, ARROWS);
+        Collections.shuffle(enabledMaterials);
+    }
+
+    private void addUpMaterial(Material material, int count) {
+        for (int i = 0; i < count; i++) {
+            enabledMaterials.add(material);
         }
     }
 
@@ -86,10 +104,15 @@ public class ItemManager {
         }
     }
 
+    private Material getMaterial() {
+        int index = new Random().nextInt(enabledMaterials.size());
+        return enabledMaterials.get(index);
+    }
+
     public ItemStack generateItem() {
         initMaterials();
 
-        ItemStack itemStack = new ItemStack(enabledMaterials.get(new Random().nextInt(enabledMaterials.size())));
+        ItemStack itemStack = new ItemStack(getMaterial());
 
         madePotion(itemStack);
         enchantItem(itemStack);

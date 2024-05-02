@@ -1,18 +1,16 @@
 package org.koteyka.columns.manager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
+import org.bukkit.*;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.koteyka.columns.param.Cords;
 import org.koteyka.columns.param.Mode;
+import org.koteyka.columns.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class PlayerManager {
 
@@ -61,7 +59,7 @@ public class PlayerManager {
         World world = gameManager.getWorld();
         world.getWorldBorder().setSize(10_000_000);
         for (Player player : Bukkit.getOnlinePlayers()) {
-            preparePlayer(player, new Location(world, -34, 52, -45));
+            preparePlayer(player, world.getSpawnLocation());
         }
     }
 
@@ -86,9 +84,36 @@ public class PlayerManager {
         for (PotionEffect effect : p.getActivePotionEffects())  // Проходимся по эффектам игрока
             p.removePotionEffect(effect.getType());  // Очищаем эффект у игрока
         p.setHealth(p.getMaxHealth());  // Лечим игрока
-        p.setFoodLevel(20);  // Кормим игрока
+        p.setFoodLevel(40);  // Кормим игрока
         p.setFireTicks(0);  // Тушим игрока от огня
         p.setGameMode(GameMode.SURVIVAL);  // Ставим режим выживания
         p.teleport(location);  // Телепортируем игрока
+    }
+
+    public void giveItems(ItemStack itemStack) {
+        List<Player> playersInGame = getPlayersInGame();
+        for (Player player : playersInGame) {
+            if (player.getGameMode() == GameMode.SPECTATOR) continue;
+            player.getInventory().addItem(itemStack);
+        }
+    }
+
+    public void giveEffects() {
+        List<Player> playersInGame = getPlayersInGame();
+        for (Player player : playersInGame) {
+            if (player.getGameMode() == GameMode.SPECTATOR) continue;
+            List<PotionEffectType> effects = Arrays.asList(PotionEffectType.values());
+            PotionEffectType potionEffectType = effects.get(new Random().nextInt(effects.size()));
+            int duration = (new Random().nextInt(30) + 30) * 20;
+            PotionEffect potionEffect = new PotionEffect(potionEffectType, duration, 0);
+            player.addPotionEffect(potionEffect);
+        }
+    }
+
+    public void spawnParticles(Particle particle, int count) {
+        List<Player> playersInGame = getPlayersInGame();
+        for (Player player : playersInGame) {
+            gameManager.getWorld().spawnParticle(particle, player.getLocation(), count);
+        }
     }
 }
