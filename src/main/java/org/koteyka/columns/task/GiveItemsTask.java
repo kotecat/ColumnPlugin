@@ -19,6 +19,6 @@ public class GiveItemsTask extends BukkitRunnable {
 
     @Override
     public void run() {
-        gameManager.getPlayerManager().giveItems(itemManager.generateItem());
+        gameManager.getPlayerManager().giveItems();
     }
 }

@@ -194,7 +194,7 @@ public class GameManager {
                 break;
             case RAND_ITEM:
                 ItemManager itemManager = new ItemManager(world);
-                getPlayerManager().giveItems(itemManager.generateItem());
+                getPlayerManager().giveItems();
                 Bukkit.broadcastMessage("§4[!] §6Everyone gets an §4extra §2ITEM§6!");
                 break;
             case RAND_EFFECT:

@@ -22,7 +22,7 @@ public class ItemManager {
     private final World world;
 
     private final int POTIONS_UP = 1;
-    private final int ENCH_BOOKS = 2;
+    private final int ENCH_BOOKS = 1;
     private final int ARROWS = 1;
 
     public ItemManager(World world) {

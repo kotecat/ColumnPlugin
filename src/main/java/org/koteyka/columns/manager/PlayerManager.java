@@ -90,11 +90,11 @@ public class PlayerManager {
         p.teleport(location);  // Телепортируем игрока
     }
 
-    public void giveItems(ItemStack itemStack) {
+    public void giveItems() {
         List<Player> playersInGame = getPlayersInGame();
         for (Player player : playersInGame) {
             if (player.getGameMode() == GameMode.SPECTATOR) continue;
-            player.getInventory().addItem(itemStack);
+            player.getInventory().addItem(new ItemManager(gameManager.getWorld()).generateItem());
         }
     }
 
