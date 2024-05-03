@@ -24,7 +24,7 @@ public class PlayerManager {
 
     public void addPlayersInGame() {
         this.playersInGame.clear();
-        Bukkit.getOnlinePlayers().forEach(
+        this.gameManager.getWorld().getPlayers().forEach(
                 player -> this.playersInGame.add(player.getUniqueId())
         );
         this.playersInGame = new ArrayList<>(playersInGame.subList(0, Math.min(MAX_PLAYERS, playersInGame.size())));
@@ -57,8 +57,8 @@ public class PlayerManager {
 
     public void prepareLobby() {
         World world = gameManager.getWorld();
-        world.getWorldBorder().setSize(10_000_000);
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        Utils.allWorldsBorderSet(10_000_000);
+        for (Player player : world.getPlayers()) {
             preparePlayer(player, world.getSpawnLocation());
         }
     }

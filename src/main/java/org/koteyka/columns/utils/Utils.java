@@ -73,4 +73,10 @@ public class Utils {
         String bukkitVersion = Bukkit.getBukkitVersion();
         return bukkitVersion.startsWith("1.20");
     }
+
+    public static void allWorldsBorderSet(int size) {
+        for (World world : Bukkit.getWorlds()) {
+            world.getWorldBorder().setSize(10_000_000);
+        }
+    }
 }

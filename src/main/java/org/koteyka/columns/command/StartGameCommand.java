@@ -1,5 +1,8 @@
 package org.koteyka.columns.command;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -17,11 +20,25 @@ public class StartGameCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) return true;
+        World world;
+        if (args.length > 0) {
+            String worldName = args[0];
+            world = Bukkit.getWorld(worldName);
+        } else {
+            if (!(sender instanceof Player)) {
+                sender.sendMessage(ChatColor.RED + "Please enter the WORLD NAME to start the game");
+                return true;
+            };
+            Player player = (Player) sender;
+            world = player.getWorld();
+        }
 
-        Player player = (Player) sender;
+        if (world == null) {
+            sender.sendMessage(ChatColor.RED + "World not found");
+            return true;
+        }
 
-        gameManager.setWorld(player.getWorld());
+        gameManager.setWorld(world);
         GameState gameState = gameManager.getGameState();
 
         if (gameState == GameState.ACTIVE) {

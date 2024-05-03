@@ -36,13 +36,13 @@ public class ItemManager {
                 enabledMaterials.add(material);
             }
         }
-        addUpMaterial(Material.POTION, POTIONS_UP);
-        addUpMaterial(Material.SPLASH_POTION, POTIONS_UP);
-        addUpMaterial(Material.LINGERING_POTION, POTIONS_UP);
-
-        addUpMaterial(Material.ENCHANTED_BOOK, ENCH_BOOKS);
-
-        addUpMaterial(Material.TIPPED_ARROW, ARROWS);
+//        addUpMaterial(Material.POTION, POTIONS_UP);
+//        addUpMaterial(Material.SPLASH_POTION, POTIONS_UP);
+//        addUpMaterial(Material.LINGERING_POTION, POTIONS_UP);
+//
+//        addUpMaterial(Material.ENCHANTED_BOOK, ENCH_BOOKS);
+//
+//        addUpMaterial(Material.TIPPED_ARROW, ARROWS);
         Collections.shuffle(enabledMaterials);
     }
 

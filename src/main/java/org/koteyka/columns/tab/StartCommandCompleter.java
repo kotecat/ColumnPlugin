@@ -1,8 +1,11 @@
 package org.koteyka.columns.tab;
 
+import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.koteyka.columns.enums.Event;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,6 +14,14 @@ public class StartCommandCompleter implements TabCompleter {
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String label, String[] args) {
-        return new ArrayList<>();
+        ArrayList<String> worlds = new ArrayList<>();
+
+        if (args.length <= 1) {
+            for (World world : Bukkit.getWorlds()) {
+                worlds.add(world.getName().toLowerCase());
+            }
+        }
+
+        return worlds;
     }
 }
