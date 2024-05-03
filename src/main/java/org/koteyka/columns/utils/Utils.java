@@ -76,7 +76,7 @@ public class Utils {
 
     public static void allWorldsBorderSet(int size) {
         for (World world : Bukkit.getWorlds()) {
-            world.getWorldBorder().setSize(10_000_000);
+            world.getWorldBorder().setSize(size);
         }
     }
 }
