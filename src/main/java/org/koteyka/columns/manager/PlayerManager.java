@@ -16,15 +16,15 @@ public class PlayerManager {
 
     private final GameManager gameManager;
     private List<UUID> playersInGame = new ArrayList<UUID>();
-    private static final int MAX_PLAYERS = 8;
+    private static final int MAX_PLAYERS = 50;
 
     public PlayerManager(GameManager gameManager) {
         this.gameManager = gameManager;
     }
 
     public void addPlayersInGame() {
-        this.playersInGame.clear();
-        this.gameManager.getWorld().getPlayers().forEach(
+        clearAllPlayers();
+        Bukkit.getOnlinePlayers().forEach(
                 player -> this.playersInGame.add(player.getUniqueId())
         );
         this.playersInGame = new ArrayList<>(playersInGame.subList(0, Math.min(MAX_PLAYERS, playersInGame.size())));
@@ -67,15 +67,24 @@ public class PlayerManager {
         World world = gameManager.getWorld();
         Mode mode = gameManager.getMode();
 
-        world.getWorldBorder().setSize(mode.getBorder().getStartBorderSize());
+        ArrayList<Cords> spawnCords = gameManager.getCords();
+        Collections.shuffle(spawnCords);
+
+        world.getWorldBorder().setSize(gameManager.getRadius() * 2 + 20);
         world.getWorldBorder().setDamageBuffer(0.0);
         world.getWorldBorder().setCenter(mode.getBorder().getCenterX(), mode.getBorder().getCenterZ());
 
-        for (int i = 0; i < playersInGame.size(); i++) {
-            Player player = getPlayersInGame().get(i);
-            Cords cords = mode.getCords().get(i);
-            Location location = new Location(world, cords.x, cords.y, cords.z, cords.p, 0);
-            preparePlayer(player, location);
+
+        for (int i = 0; i < spawnCords.size(); i++) {
+            try {
+                Player player = getPlayersInGame().get(i);
+                Cords cords = spawnCords.get(i);
+                Location location = new Location(world, cords.x, cords.y, cords.z, cords.p, 0);
+                preparePlayer(player, location);
+            } catch (Exception e) {
+
+            }
+
         }
     }
 
@@ -94,17 +103,28 @@ public class PlayerManager {
         List<Player> playersInGame = getPlayersInGame();
         for (Player player : playersInGame) {
             if (player.getGameMode() == GameMode.SPECTATOR) continue;
-            player.getInventory().addItem(new ItemManager(gameManager.getWorld()).generateItem());
+            switch (gameManager.getPlayMode()) {
+                case DEFAULT:
+                    player.getInventory().addItem(new ItemManager(gameManager.getWorld()).generateItem());
+                    break;
+                case LUCKY_BLOCK:
+                    player.getInventory().addItem(new ItemStack(Material.NOTE_BLOCK));
+                    break;
+            }
+
         }
     }
 
-    public void giveEffects() {
+    public void giveEffects(boolean instantDamage) {
         List<Player> playersInGame = getPlayersInGame();
         for (Player player : playersInGame) {
             if (player.getGameMode() == GameMode.SPECTATOR) continue;
-            List<PotionEffectType> effects = Arrays.asList(PotionEffectType.values());
+            List<PotionEffectType> effects = new ArrayList<>(Arrays.asList(PotionEffectType.values()));
+            if (!instantDamage) {
+                effects.remove(PotionEffectType.HARM);
+            }
             PotionEffectType potionEffectType = effects.get(new Random().nextInt(effects.size()));
-            int duration = (new Random().nextInt(30) + 30) * 20;
+            int duration = (new Random().nextInt(5) + 5) * 20;
             PotionEffect potionEffect = new PotionEffect(potionEffectType, duration, 0);
             player.addPotionEffect(potionEffect);
         }

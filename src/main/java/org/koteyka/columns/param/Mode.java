@@ -6,46 +6,19 @@ import java.util.List;
 public enum Mode {
 
     FOUR (
-            Arrays.asList(
-                    new Cords(-13.5, 50, 0.5, -90),
-                    new Cords(13.5, 50, 0.5, 90),
-                    new Cords(0.5, 50, -13.5, 0),
-                    new Cords(0.5, 50, 13.5, 180)
-            ),
-            new BorderConf(36, 60, 450),
-            10,
-            7
-    ),
-    EIGHT (
-            Arrays.asList(
-                    new Cords(-6.5, 50, 15.5, -160),
-                    new Cords(7.5, 50, 15.5, 160),
-                    new Cords(15.5, 50, 7.5, 113),
-                    new Cords(15.5, 50, -6.5, 70),
-                    new Cords(7.5, 50, -15.5, 30),
-                    new Cords(-6.5, 50, -15.5, -30),
-                    new Cords(-15.5, 50, -6.5, -62),
-                    new Cords(-15.5, 50, 7.5, -113)
-            ),
-            new BorderConf(39, 60, 500),
-            10,
-            8
+            new BorderConf(36, 80, 360),
+            8,
+            5
     );
 
-    private final List<Cords> cords;
     private final BorderConf border;
     private final int countDownItem;
     private final int columnHeight;
 
-    Mode(List<Cords> cords, BorderConf border, int countDownItem, int columnHeight) {
-        this.cords = cords;
+    Mode(BorderConf border, int countDownItem, int columnHeight) {
         this.border = border;
         this.countDownItem = countDownItem;
         this.columnHeight = columnHeight;
-    }
-
-    public List<Cords> getCords() {
-        return cords;
     }
 
     public BorderConf getBorder() {

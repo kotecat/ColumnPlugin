@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.koteyka.columns.ColumnsPlugin;
 import org.koteyka.columns.enums.Event;
+import org.koteyka.columns.enums.PlayMode;
 import org.koteyka.columns.param.Cords;
 import org.koteyka.columns.param.Mode;
 import org.koteyka.columns.enums.GameState;
@@ -31,6 +32,7 @@ public class GameManager {
     private final ColumnsPlugin plugin;
     private final PlayerManager playerManager;
     private GameState gameState = GameState.NONE;
+    private PlayMode playMode = PlayMode.DEFAULT;
     private World world;
 
     private List<BukkitRunnable> tasks = new ArrayList<>();
@@ -76,11 +78,19 @@ public class GameManager {
                 Bukkit.broadcastMessage("GO!");
                 playerManager.prepareGame();
                 // tasks init
-                BukkitRunnable giveItemsTask = new GiveItemsTask(this);
-                giveItemsTask.runTaskTimer(plugin, getMode().getCountDownItem(), getMode().getCountDownItem());
+                int countDown = 8;
+                if (playMode == PlayMode.LUCKY_BLOCK) {
+                    countDown = 11;
+                }
+                BukkitRunnable giveItemsTask = new GiveItemsTask(this, countDown);
+                giveItemsTask.runTaskTimer(plugin, 0L, 20L);
                 tasks.add(giveItemsTask);
+
                 BukkitRunnable borderTask = new BorderTask(this);
-                borderTask.runTaskLater(plugin, getMode().getBorder().getTimeToWait() * 20L);
+                System.out.println("TTS:" + (getMode().getBorder().getTimeToWait() + (getCountPlayers() * 5L)) * 20L);
+                borderTask.runTaskLater(plugin,
+                        (getMode().getBorder().getTimeToWait() + (getCountPlayers() * 5L)) * 20L
+                );
                 tasks.add(borderTask);
                 Bukkit.getScheduler().runTaskLater(plugin, () -> {
                     madeCapsule(Material.AIR);
@@ -99,7 +109,7 @@ public class GameManager {
             return;
         }
 
-        Cords c = getMode().getCords().get(0);
+        Cords c = getCords().get(0);
         player.teleport(new Location(world, 0, c.y, 0));
         player.setGameMode(GameMode.SPECTATOR);
         player.setHealth(player.getMaxHealth());
@@ -143,28 +153,30 @@ public class GameManager {
     public void prepareGameLocation() {
         clearGameLocation();
         createColumns();
+        Utils.createPlatform(this, Material.BEDROCK, 27);
     }
 
     private void createColumns() {
         Mode mode = getMode();
-        for (Cords cord : mode.getCords()) {
+        List<Cords> cords = getCords();
+        for (Cords cord : cords) {
             Location location = new Location(world, cord.x, cord.y, cord.z);
             Utils.createColumn(location, mode.getColumnHeight());
         }
     }
 
     private void madeCapsule(Material material) {
-        Mode mode = getMode();
-        for (Cords cord : mode.getCords()) {
+        for (Cords cord : getCords()) {
             Location location = new Location(world, cord.x, cord.y, cord.z);
             Utils.createCapsule(location, material);
         }
     }
 
     public void clearGameLocation() {
+        int radius = getRadius() + 20;
         Utils.fillBlock(
-                new Vector(-39, world.getMinHeight(), -39),
-                new Vector(39, world.getMaxHeight(), 39),
+                new Vector(-radius, world.getMinHeight(), -radius),
+                new Vector(radius, world.getMaxHeight(), radius),
                 Material.AIR,
                 this.world
         );
@@ -198,7 +210,7 @@ public class GameManager {
                 Bukkit.broadcastMessage("§4[!] §6Everyone gets an §4extra §2RANDOM ITEM§6!");
                 break;
             case RAND_EFFECT:
-                getPlayerManager().giveEffects();
+                getPlayerManager().giveEffects(false);
                 Bukkit.broadcastMessage("§4[!] §6Everyone gets an §4random §cEFFECT§6!");
                 break;
         }
@@ -224,15 +236,43 @@ public class GameManager {
         this.world = world;
     }
 
-    public Mode getMode() {
-        int size = playerManager.getPlayersInGame().size();
+    public ArrayList<Cords> getCords() {
+        int count = getCountPlayers();
+        int radius = getRadius();
 
-        if (size <= 4) {
-            return Mode.FOUR;
-        } else if (size <= 6) {
-            return Mode.EIGHT;
-        } else {
-            return Mode.EIGHT;
+        ArrayList<Cords> cords = new ArrayList<>();
+        int startRot = 720;
+        int rotStep = startRot / count;
+        startRot -= rotStep;
+
+        while (startRot >= 0) {
+            int y = (int) (radius * Math.sin(startRot * (Math.PI / 180)));
+            int x = (int) (radius * Math.cos(startRot * (Math.PI / 180)));
+            cords.add(new Cords(x + 0.5, 56, y + 0.5, (int) rotStep));
+            startRot -= rotStep;
         }
+
+        return cords;
+    }
+
+    public int getRadius() {
+        int count = getCountPlayers();
+        return 14 + (int) ((double) count * 0.9);
+    }
+
+    public int getCountPlayers() {
+        return Math.max(4, playerManager.getPlayersInGame().size());
+    }
+
+    public Mode getMode() {
+        return Mode.FOUR;
+    }
+
+    public PlayMode getPlayMode() {
+        return playMode;
+    }
+
+    public void setPlayMode(PlayMode playMode) {
+        this.playMode = playMode;
     }
 }

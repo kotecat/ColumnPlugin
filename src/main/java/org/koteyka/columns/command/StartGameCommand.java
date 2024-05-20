@@ -7,6 +7,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.koteyka.columns.enums.PlayMode;
 import org.koteyka.columns.manager.GameManager;
 import org.koteyka.columns.enums.GameState;
 
@@ -21,8 +22,23 @@ public class StartGameCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         World world;
-        if (args.length > 0) {
-            String worldName = args[0];
+        if (args.length == 0) {
+            sender.sendMessage(ChatColor.RED + "Please enter game mode." + ChatColor.GOLD + " ( ex. /start default )");
+            return true;
+        }
+
+        PlayMode playMode = null;
+        try {
+            playMode = PlayMode.valueOf(args[0].replace(" ", "").toUpperCase());
+        } catch (IllegalArgumentException ignored) {}
+
+        if (playMode == null) {
+            sender.sendMessage(ChatColor.RED + "Game mode not found" + ChatColor.GOLD + " ( try /start default )");
+            return true;
+        }
+
+        if (args.length > 1) {
+            String worldName = args[1];
             world = Bukkit.getWorld(worldName);
         } else {
             if (!(sender instanceof Player)) {
@@ -45,6 +61,7 @@ public class StartGameCommand implements CommandExecutor {
             gameManager.setGameState(GameState.LOBBY);
         }
 
+        gameManager.setPlayMode(playMode);
         gameManager.setGameState(GameState.STARTING);
 
         return true;

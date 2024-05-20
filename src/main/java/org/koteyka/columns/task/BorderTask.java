@@ -22,13 +22,15 @@ public class BorderTask extends BukkitRunnable {
         World world = gameManager.getWorld();
         WorldBorder worldBorder = world.getWorldBorder();
         BorderConf border = gameManager.getMode().getBorder();
-        worldBorder.setSize(1.0, border.getTimeToEnd());
+        int timeToEnd = border.getTimeToEnd() + (gameManager.getCountPlayers() * 3);
+        System.out.println("TTE: " + timeToEnd);
+        worldBorder.setSize(1.0, timeToEnd);
 
         task = Bukkit.getScheduler().runTaskLater(gameManager.getPlugin(), () -> {
             worldBorder.setCenter(border.getEndX(), border.getEndZ());
             worldBorder.setDamageBuffer(border.getEndDamageBuffer());
             worldBorder.setDamageAmount(border.getEndDamageAmount());
-        }, border.getTimeToEnd() * 20L);
+        }, timeToEnd * 20L);
     }
 
     @Override
